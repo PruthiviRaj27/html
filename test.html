@@ -249,27 +249,31 @@
             <h2 class="text-lg font-bold text-[#776e65] mb-3">Move Controls</h2>
             <button id="btn-up"
                 class="w-20 h-10 bg-[#8f7a66] text-white font-bold rounded-lg shadow-md hover:bg-[#9e948a] transition mb-2">
-                Up ↑
+                Up
             </button>
             <div class="flex justify-between w-full">
                 <button id="btn-left"
                     class="w-20 h-10 bg-[#8f7a66] text-white font-bold rounded-lg shadow-md hover:bg-[#9e948a] transition">
-                    ← Left
+                    Left
                 </button>
                 <button id="btn-right"
                     class="w-20 h-10 bg-[#8f7a66] text-white font-bold rounded-lg shadow-md hover:bg-[#9e948a] transition">
-                    Right →
+                    Right
                 </button>
             </div>
             <button id="btn-down"
                 class="w-20 h-10 bg-[#8f7a66] text-white font-bold rounded-lg shadow-md hover:bg-[#9e948a] transition mt-2">
-                Down ↓
+                Down
             </button>
         </div>
     </div>
 
     <!-- JavaScript Game Logic -->
     <script>
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const enableInterstitial = urlParams.get("enable_interstitial") === "true";
+
         // Global game state
         let board = [];
         let score = 0;
@@ -306,6 +310,23 @@
                 } catch (error) {
                     console.error("Error saving high score to localStorage:", error);
                 }
+            }
+        }
+
+        window.restartGame = function () {
+            initializeGame();
+        };
+
+        function restart() {
+            if (enableInterstitial) {
+                if (window.Android && window.Android.showInterstitialAd) {
+                    window.Android.showInterstitialAd();
+                } else {
+                    console.warn("Android interface not available, running fallback.");
+                    initializeGame();
+                }
+            } else {
+                initializeGame();
             }
         }
 
@@ -621,7 +642,7 @@
         document.getElementById('btn-left').addEventListener('click', () => handleInput('left'));
         document.getElementById('btn-right').addEventListener('click', () => handleInput('right'));
         document.getElementById('new-game-btn').addEventListener('click', initializeGame);
-        document.getElementById('try-again-btn').addEventListener('click', initializeGame);
+        document.getElementById('try-again-btn').addEventListener('click', restart);
 
         // Initialize the game when the window loads
         window.onload = function () {
